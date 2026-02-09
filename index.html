@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For You</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+   <style>
+        /* --- CORE VARIABLES & RESET --- */
+        :root {
+            --bg-color: #fdf6ec; 
+            --accent-pink: #ffb7b2;
+            --deep-rose: #e27d60;
+            --text-main: #6c5b7b;
+            --font-head: 'Dancing Script', cursive;
+            --font-body: 'Quicksand', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(180deg, #fff0f5 0%, #fdf6ec 100%);
+            font-family: var(--font-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            cursor: default;
+            min-height: 100vh;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3, h5 {
+            font-family: var(--font-head);
+            font-weight: 600;
+        }
+        
+
+        h2 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--deep-rose);
+            text-align: center;
+        }
+
+        h5 {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            color: var(--deep-rose);
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* --- UTILITIES --- */
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 5rem 1rem;
+            text-align: center;
+        }
+
+        .hidden {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-out;
+        }
+
+        .show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- MUSIC PLAYER --- */
+        .music-player {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 18px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+            border: 1px solid var(--accent-pink);
+        }
+        .music-player:active { transform: scale(0.95); }
+
+        /* --- CUSTOM CURSOR HEART --- */
+        .heart-trail {
+            position: fixed;
+            pointer-events: none;
+            color: var(--deep-rose);
+            animation: floatUp 1s ease-out forwards;
+            font-size: 1.5rem;
+            z-index: 9999;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+        }
+
+        /* --- 1. HERO SECTION --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            color: var(--deep-rose);
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+        }
+
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid var(--deep-rose); 
+            white-space: nowrap; 
+            margin: 0 auto; 
+            letter-spacing: .10em; 
+            animation: typing 3.5s steps(30, end), blink-caret .75s step-end infinite;
+            max-width: fit-content;
+            font-family: var(--font-body);
+            font-size: 1.4rem;
+            font-style: italic;
+        }
+
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--deep-rose); } }
+
+        .btn-scroll {
+            margin-top: 3.5rem;
+            background: var(--text-main);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(108, 91, 123, 0.3);
+            display: inline-block;
+        }
+        .btn-scroll:active {
+            background: var(--deep-rose);
+            transform: scale(0.95);
+        }
+
+        /* --- 3. CARDS SECTION (US) --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        
+        @media (hover: hover) {
+            .card:hover {
+                transform: translateY(-5px) rotate(1deg);
+                box-shadow: 0 15px 30px rgba(226, 125, 96, 0.2);
+            }
+        }
+
+        .card h3 {
+            color: var(--deep-rose);
+            margin-bottom: 0.8rem;
+            font-size: 1.8rem;
+        }
+
+        /* --- 4. STICKY NOTES SECTION --- */
+        .notes-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .sticky-note {
+            background: #fff9c4;
+            width: 220px;
+            height: 220px;
+            padding: 1.5rem;
+            box-shadow: 3px 3px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.6rem;
+            line-height: 1.3;
+            text-align: center;
+            transform: rotate(-2deg);
+            transition: 0.3s;
+        }
+
+        .sticky-note:nth-child(even) { background: #e1f5fe; transform: rotate(2deg); }
+        .sticky-note:nth-child(3) { background: #ffebee; transform: rotate(-1deg); }
+        
+        @media (hover: hover) {
+            .sticky-note:hover { transform: scale(1.1) rotate(0); z-index: 10; }
+        }
+
+        /* --- 5. MOVIE SECTION --- */
+        .movie-box {
+            background: #2a2a2a;
+            color: #eee;
+            padding: 4rem 2rem;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        /* --- 7. INTERACTIVE --- */
+        /* IMPORTANT: This section must be relative so the button moves inside it */
+        #interactive-sec {
+            position: relative; 
+            /* Min-height ensures the button has space to run around */
+            min-height: 400px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .interactive-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            background: var(--deep-rose);
+            color: white;
+            font-family: var(--font-body);
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 5px 15px rgba(226, 125, 96, 0.4);
+            z-index: 2;
+        }
+        .btn-action:active { transform: scale(0.95); opacity: 0.9; }
+        
+        /* The No Button */
+        #noBtn {
+            background-color: #a8a8a8;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease; /* Smoother movement */
+        }
+
+        #response-text {
+            margin-top: 25px;
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: var(--deep-rose);
+            min-height: 40px;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: white;
+            margin-top: 2rem;
+        }
+        .tiny-text {
+            font-size: 0.9rem;
+            opacity: 0.6;
+            margin-top: 15px;
+            display: block;
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 820px) {
+            .hero h1 { font-size: 4rem; }
+            .hero h1.sub-h1 { font-size: 2.5rem !important; }
+            h2 { font-size: 2.5rem; }
+            .typewriter { font-size: 1.1rem; white-space: normal; border: none; animation: none; text-align: center; }
+            .container { padding: 3rem 1.5rem; }
+        }
+
+        @media (max-width: 500px) {
+            .hero h1 { font-size: 3rem; }
+            .hero h1.sub-h1 { font-size: 2rem !important; }
+            .typewriter { font-size: 1rem; }
+            .interactive-buttons { flex-direction: column; align-items: center; }
+            .btn-action { width: 80%; }
+            #noBtn { width: 80%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Music Toggle -->
+    <div class="music-player" id="musicToggle">
+        <span>🎧</span> <span id="musicText">Play Music</span>
+        <audio id="bgMusic" loop>
+            <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- 1. Hero Section -->
+    <section class="hero">
+        <div class="container" style="padding:0;">
+            <h1>Hey, you.</h1>
+            <h1 class="sub-h1" style="font-size: 3rem;">Yeah... you.</h1>
+            <br>
+            <div class="typewriter">This isn’t a love confession. It’s worse.</div>
+            <a href="#intro" class="btn-scroll">Scroll slowly 💗</a>
+        </div>
+    </section>
+
+    <!-- 2. Why This Exists -->
+    <section id="intro" class="container hidden">
+        <h2>Why This Exists</h2>
+        <p>So here’s the thing.</p>
+        <p>I didn’t want to send a text. I didn’t want to send a reel. I wanted to send something that lasts longer than 24 hours.</p>
+        <br>
+        <p style="font-weight: 700; color: var(--deep-rose); font-size: 1.4rem;">You’re my best friend.</p>
+        <p>But you matter in a way that deserves its own website.</p>
+    </section>
+
+    <!-- 3. Us, In Case You Forgot -->
+    <section class="container hidden">
+        <h2>Us, In Case You Forgot</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <h3>The First Talk</h3>
+                <p>That cringe start from a palm 😂 to being unseparable. Magical, isn't it...</p>
+            </div>
+            <div class="card">
+                <h3>Chaos Mode</h3>
+                <p>If anyone overheard our random conversations, we’d both probably be in a lot of trouble. That happened a few times, hasn't it (Won't happen again)</p>
+            </div>
+            <div class="card">
+                <h3>Best motivation</h3>
+                <p> Never told this but I study because you study. Your dedication and discipline and craving for marks amaze me</p>
+            </div>
+            <div class="card">
+                <h3>Safe Place</h3>
+                <p>You’re the person I trust to say everything without thinking twice. That’s rare. That’s special.</p>
+            </div>
+            <div class="card">
+                <h3>Study buddy</h3>
+                <p>From last-minute cramming to actual study sessions, you’ve been there. And it’s always better with you.</p>
+            </div>
+            <div class="card">
+                <h3>Emotional balancer</h3>
+                <p> You are the best therapist there is for me, Nande / Akke / Sis(bro) / Cuduu </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- 4. Things I Like -->
+    <section class="container hidden">
+        <h2>Things I Like About You<br><span style="font-size: 1.5rem; font-family: var(--font-body); color: var(--text-main); opacity: 0.7;">(But Won't Say Out Loud)</span></h2>
+        <div class="notes-container">
+            <div class="sticky-note">The way you think (overthinking and imagination) make me speechless.</div>
+            <div class="sticky-note">How you listen to my every stupid thing (even when pretending not to)</div>
+            <div class="sticky-note">Your random voice notes.. feeling butterfies...</div>
+            <div class="sticky-note">Your brain. It's annoying how good it is. Worshiping it here.</div>
+            <div class="sticky-note">You driviving my mind crazy. Thinking of you (not creepily) makes me want to be close..</div>
+            <div class="sticky-note">Your beauty, wooow. Makes me want to hug you. Sorry for taking screenshots of u 😳</div>
+        </div>
+        <p style="margin-top: 3rem;">See? Still not a love confession(If u feel like one, bear with me). Just facts.</p>
+    </section>
+
+    <!-- 5. Movie Section -->
+    <section class="container hidden">
+        <div class="movie-box">
+            <h2>If This Was a Movie</h2>
+            <p><strong>Genre:</strong> Slow-burn, comfort, all-day talks.</p>
+            <p><strong>Soundtrack:</strong> Refers to every song in both our lists combined.</p>
+            <hr style="opacity: 0.2; margin: 30px 0;">
+            <p><strong>Favorite Scene:</strong></p>
+            <p style="font-style: italic; font-size: 1.4rem;">"You got mad at me and I apologized with a whole novel."</p>
+        </div>
+    </section>
+
+    <!-- 6. What I Wish -->
+    <section class="container hidden">
+        <h2>What I Wish For You</h2>
+        <p>I hope you’re always surrounded by people who see you the way I do.</p>
+        <p>I hope you never feel alone on days you pretend you’re fine. I'm also there for you to comfort you... Remember that.</p>
+        <p style="font-weight: 700; color: var(--deep-rose); font-size: 1.3rem;">And I hope you always remember that you are smart and you matter — loudly.</p>
+    </section>
+
+    <!-- 7. Interactive -->
+    <section id="interactive-sec" class="container hidden">
+        <h2>Quick Question</h2>
+        <p>Did this make you smile?</p>
+        <div class="interactive-buttons">
+            <button class="btn-action" onclick="showResponse('Mission accomplished.')">Yes 💗</button>
+            <button class="btn-action" onclick="showResponse('Obviously 😌')">Obviously 😌</button>
+            <!-- RUNAWAY BUTTON -->
+            <button class="btn-action" id="noBtn" onclick="caughtYou()">No</button>
+        </div>
+        <div id="response-text"></div>
+    </section>
+
+    <!-- 8. Not a Valentine -->
+    <section class="container hidden">
+        <h2>Not a Valentine, But...</h2>
+        <p>It’s Valentine’s Day. And I didn’t want to ignore it.</p>
+        <p>So here’s something different.</p>
+        <br>
+        <p style="font-size: 2rem; font-family: var(--font-head); color: var(--deep-rose);">No labels. No expectations. Just appreciation of the bestest person I met.</p>
+    </section>
+
+    <!-- 9. Footer -->
+    <footer>
+        <h2>Is this Love? IDK, I'm Confused...<br>
+            I'm acting wierd in front of the only girl in my life.<br>
+            Whatever we are, I’m glad it’s you.</h2>
+        <h5>Happy Valentine’s Day, bestie. (Matti) 😏💗</h5>
+        <span class="tiny-text">Hope u never find a boyfriend 😉<br>
+            Made with unnecessary effort & genuine feelings
+            By your "Matta"...😘
+        </span>
+    </footer>
+
+    <script>
+        // --- SCROLL ANIMATION ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        const hiddenElements = document.querySelectorAll('.hidden');
+        hiddenElements.forEach((el) => observer.observe(el));
+
+        // --- MUSIC PLAYER ---
+        const musicToggle = document.getElementById('musicToggle');
+        const musicText = document.getElementById('musicText');
+        const bgMusic = document.getElementById('bgMusic');
+        let isPlaying = false;
+
+        musicToggle.addEventListener('click', () => {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicText.innerText = "Play Music";
+                isPlaying = false;
+            } else {
+                bgMusic.play();
+                musicText.innerText = "Pause Music";
+                isPlaying = true;
+            }
+        });
+
+        // --- HEART GENERATOR ---
+        function createHeart(x, y) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-trail');
+            heart.innerHTML = '💗';
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            const size = Math.random() * 0.5 + 0.8;
+            heart.style.transform = `scale(${size})`;
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 1000);
+        }
+
+        let lastMove = 0;
+        document.addEventListener('mousemove', function(e) {
+            const now = Date.now();
+            if (now - lastMove > 50) {
+                createHeart(e.pageX, e.pageY);
+                lastMove = now;
+            }
+        });
+        document.addEventListener('touchmove', function(e) {
+            const now = Date.now();
+            if (now - lastMove > 50) {
+                const touch = e.touches[0];
+                createHeart(touch.pageX, touch.pageY);
+                lastMove = now;
+            }
+        });
+
+        // --- INTERACTIVE BUTTON RESPONSE ---
+        function showResponse(text) {
+            const responseDiv = document.getElementById('response-text');
+            responseDiv.style.opacity = 0;
+            setTimeout(() => {
+                responseDiv.innerText = text;
+                responseDiv.style.opacity = 1;
+            }, 200);
+            
+            for(let i=0; i<15; i++) {
+                setTimeout(createPopHeart, i * 100);
+            }
+        }
+
+        // --- RUNAWAY BUTTON LOGIC ---
+        const noBtn = document.getElementById('noBtn');
+        const containerSection = document.getElementById('interactive-sec');
+        let hasAlerted = false; // Flag to check if alert has been shown
+
+        function moveButton() {
+            if (!hasAlerted) return; // Don't move if we haven't alerted yet
+
+            // Calculate boundaries based on the container Section
+            // We subtract button size (approx 100px width/50px height) and some padding
+            const maxWidth = containerSection.clientWidth - noBtn.offsetWidth - 20;
+            const maxHeight = containerSection.clientHeight - noBtn.offsetHeight - 20;
+
+            const randomX = Math.random() * maxWidth;
+            const randomY = Math.random() * maxHeight;
+
+            // Make it absolute relative to the Section
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+        }
+
+        // For Mouse users (Hover)
+        noBtn.addEventListener('mouseover', moveButton);
+
+        // For Touch users (Touch Start)
+        noBtn.addEventListener('touchstart', (e) => {
+            if (hasAlerted) {
+                e.preventDefault(); // Stop click if already alerted
+                moveButton();
+            }
+        });
+
+        // First click logic
+        function caughtYou() {
+            if (!hasAlerted) {
+                alert("No you didn't. Say yes, 'Napuri' 😒");
+                hasAlerted = true; // Enable the moving logic
+                moveButton(); // Move it immediately after closing alert
+            }
+        }
+
+        function createPopHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💖';
+            heart.style.position = 'fixed';
+            heart.style.left = (Math.random() * window.innerWidth) + 'px';
+            heart.style.top = (window.innerHeight - 100) + 'px';
+            heart.style.zIndex = '9999';
+            heart.style.transition = 'all 1.5s ease-out';
+            heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                heart.style.transform = `translateY(-${window.innerHeight/1.5}px) rotate(${Math.random()*360}deg)`;
+                heart.style.opacity = 0;
+            }, 50);
+            setTimeout(() => heart.remove(), 1500);
+        }
+    </script>
+</body>
+</html>
